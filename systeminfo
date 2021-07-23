@@ -1,0 +1,48 @@
+#!/bin/bash
+#########################################################################
+# File Name: systeminfo.sh
+# Author: LookBack
+# Email: admin#dwhd.org
+# Version:
+# Created Time: Sun 26 Jul 2015 05:53:31 PM CST
+#########################################################################
+
+uptime() {
+        echo "系统开机时间:$(date -d "$(awk '{printf("%d\n",$1~/./?int($1)+1:$1)}' /proc/uptime) second ago" +"%F %T")" #系统开机时间
+        awk '{a=$1/86400;b=($1%86400)/3600;c=($1%3600)/60;d=$1%60}{printf("系统已经运行%d天%d时%d分%d秒\n",a,b,c,d)}' /proc/uptime #系统已经运行时间
+}
+
+cpuinfo() {
+        awk -F':[ ]' '/model name/{printf ("CPU型号:%s\n",$2);exit}' /proc/cpuinfo #CPU型号
+        awk -F':[ ]' '/physical id/{a[$2]++}END{for(i in a)printf ("%s号CPU\t线程数:%s\n",i+1,a[i]);printf("CPU总颗数:%s\n",i+1)}' /proc/cpuinfo #CPU详情
+        awk '/model name/{print "CPU频率:"$NF;exit}' /proc/cpuinfo #CPU频率
+}
+
+meminfo() {
+        awk '/MemTotal/{a=$2/(1024^2);if(a<1){a=$2/1024;printf ("内存:%dM\n",a~/\./?int(a)+1:a)}else printf("内存:%dG\n",a~/\./?int(a)+1:a)}' /proc/meminfo #内存大小
+}
+
+diskinfo() {
+        fdisk -l 2>/dev/null | awk '/(Disk )?\/dev\//'
+}
+
+case "$1" in
+        cpu)
+                cpuinfo
+                ;;
+        mem)
+                meminfo
+                ;;
+        uptime)
+                uptime
+                ;;
+        disk)
+                diskinfo
+                ;;
+        all)
+                for i in `awk -F\( '/^([a-z]|[0-9]|_).*\(\)/{print $1}' $0`; do $i && echo "";done
+                ;;
+        *)
+                echo $"Usage: $0 {cpu|mem|uptime|disk|all}"
+                exit 2
+esac
