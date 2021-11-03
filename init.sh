@@ -29,7 +29,7 @@ setssh() {
 }
 
 addYUM() {
-	[ -n "$(rpm -qa|grep epel)" ] && yum -y install epel-release
+	yum -y install epel-release
 }
 
 updateYUM() {
@@ -194,7 +194,7 @@ main() {
 	setPS1
 	setSELinux
 	setSYSCTL && sysctl -p
-	[ -n "$(grep "docker" <<< ${@})" ] && dockerINSTALL
+	dockerINSTALL
 	setWGET
 }
 
