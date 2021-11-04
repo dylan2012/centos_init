@@ -37,10 +37,11 @@ updateYUM() {
 	#sed -i '/[main]/a exclude=kernel*' /etc/yum.conf
 	yum -y install lshw vim tree bash-completion git xorg-x11-xauth xterm \
 		gettext axel tmux vnstat man vixie-cron screen vixie-cron crontabs \
-		wget curl iproute tar gdisk iotop iftop htop bind-utils telnet mtr
+		wget curl iproute tar gdisk iotop iftop htop bind-utils telnet mtr ntpdate
 	. /etc/bash_completion
 	[ "$release" = "6" ] && yum -y groupinstall "Development tools" "Server Platform Development"
 	[ "$release" = "7" ] && yum -y groups install "Development Tools" "Server Platform Development"
+	yum update -y
 }
 
 changZHCN() {
@@ -58,6 +59,10 @@ changZHCN() {
 		localectl set-keymap cn
 		localectl set-x11-keymap cn
 	fi
+	timedatectl set-timezone Asia/Shanghai
+	crontab -l > conf
+	echo "*/5 * * * * /usr/sbin/ntpdate -u asia.pool.ntp.org >> /tmp/tmp.txt" >> conf 
+	crontab conf && rm -f conf
 }
 
 addBINscript() {
