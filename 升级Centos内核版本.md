@@ -9,7 +9,8 @@
 数字 C 是内核次版本号：次版本号是无论在内核增加安全补丁、修复bug、实现新的特性或者驱动时都会改变
 
 # 二、查看那系统内核版本
-``` uname -r
+``` 
+#uname -r
 3.10.0-514.el7.x86_64
 # cat /etc/redhat-release
 CentOS Linux release 7.3.1611 (Core)
